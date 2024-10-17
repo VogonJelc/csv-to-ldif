@@ -4,3 +4,4 @@
 .DS_Store
 # Ignore the entire test directory
 /test/
+.DS_Store
