@@ -1,0 +1,6 @@
+# Ignore test files
+*.ldif
+*.csv
+.DS_Store
+# Ignore the entire test directory
+/test/
