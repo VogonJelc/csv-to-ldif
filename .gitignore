@@ -7,4 +7,6 @@ envVars.txt
 # Ignore the entire test directory
 /test/
 /old_files/
+/dist/
+/build/
 .DS_Store
