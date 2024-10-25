@@ -1,6 +1,7 @@
 # Ignore test files
 *.ldif
 *.csv
+*.spec
 .DS_Store
 deactivate
 envVars.txt
