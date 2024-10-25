@@ -2,6 +2,9 @@
 *.ldif
 *.csv
 .DS_Store
+deactivate
+envVars.txt
 # Ignore the entire test directory
 /test/
+/old_files/
 .DS_Store
