@@ -4,9 +4,9 @@ import csv
 import tkinter as tk
 from tkinter import filedialog
 from tkinter.ttk import Progressbar, Treeview, Combobox, Checkbutton
-from wsgiref.headers import Headers
+
 import chardet as crd
-from pyrsistent import optional
+
 
 #data type to keep our stuff arround
 class DataStorage:
