@@ -213,7 +213,7 @@ def open_file() -> None:
 
         file_path: str = filedialog.askopenfilename(
             filetypes=[("CSV files", "*.csv")])
-        print(file_path)    
+        #print(file_path)    
         if file_path:
             ldif_file: str = filedialog.asksaveasfilename(
                 defaultextension=".ldif", filetypes=[("LDIF files", "*.ldif")])
