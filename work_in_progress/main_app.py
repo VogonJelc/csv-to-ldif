@@ -21,7 +21,7 @@ def process_ldif()->None:
 if __name__ == "__main__":
     app = tk.Tk()
     app.title("CSV to LDIF Converter")
-    app.geometry("700x500")
+    app.geometry("700x700")
 
 
  
@@ -51,5 +51,24 @@ if __name__ == "__main__":
 
     progress_label = tk.Label(app, text="Waiting for Input!")
     progress_label.grid(row=7, column=0, columnspan=1, pady=10)
+    o_label = tk.Label(app, text="Organization (o):")
+    o_entry = tk.Entry(app)
+    
+
+    ou_label = tk.Label(app, text="Organizational Unit (ou):")
+    ou_entry = tk.Entry(app)
+    
+
+    dc_label = tk.Label(app, text="Domain Component (dc) ea example.com:")
+    dc_entry = tk.Entry(app)
+    
+    o_label.grid(row=8, column=0, pady=5, sticky="e")
+    o_entry.grid(row=8, column=1, pady=5, sticky="w")
+
+    ou_label.grid(row=9, column=0, pady=9, sticky="e")
+    ou_entry.grid(row=9, column=1, pady=9, sticky="w")
+
+    dc_label.grid(row=10, column=0, pady=5, sticky="e")
+    dc_entry.grid(row=10, column=1, pady=5, sticky="w")
 
     app.mainloop()
