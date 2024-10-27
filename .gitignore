@@ -10,4 +10,5 @@ envVars.txt
 /old_files/
 /dist/
 /build/
+/Obsolete/
 .DS_Store
