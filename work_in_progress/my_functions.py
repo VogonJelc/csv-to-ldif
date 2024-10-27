@@ -1,56 +1,75 @@
-"""
-"Oi mate! Ya got a loicense fer dat?"
-
-MIT License
-
-Copyright (c) 2024 Igor Putica
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-Info
----------------
-Author: Igor Putica
-Date: 2024-10-17
-Version: 2.0
-Description: This app converts google exported users from CSV to ldif for
-Apache Directory Server. Format csv to have first name, last name, email and status.
-If status is not active the script will not create entry. Added fields for ou and o
-Modules Required:
-- tkinter
-- CSV
-
-
-Usage:
-1. Install the required modules using pip.
-2. only for terminal version,Copy the csv file with google users in the same directory as script.
-3. Run and follow instructions
-
-Future Features:
-- Add more data sources.
-- Implement a GUI. {not gonna happen any time soon, happened Copilot did the tk thing for me}
-
-"""
+#This is just a whole bunch of functions I have that I might use in new project. 
 
 import csv
+from email import message
+from email.header import Header
+from shutil import ExecError
 import tkinter as tk
 from tkinter import filedialog
-from tkinter.ttk import Progressbar
+from tkinter.ttk import Progressbar, Treeview, Combobox, Checkbutton
+from wsgiref.headers import Headers
 import chardet as crd
+from pyrsistent import optional
+
+#data type to keep our stuff arround
+class DataStorage:
+    def __init__(self, csv_file:str=None,ldif_file:str=None):
+        #Names of the files in use
+        self.InFile:str=csv_file
+        self.OutFile:str=ldif_file
+        #Extracted list of dictionaries
+        self.Data: list[dict]=None
+        #Headers from data
+        self.Headers:list=None
+        #ldap entries
+        #required to get
+        self.OU:str=None
+        self.O:str=None
+        #optional entry must be example.com and split into dc=example, dc=com
+        self.DC:str=None
+    #set name of the input file and path to it     
+    def set_input(self,file_path: str=None)-> tuple[bool,str]:
+        try:
+            if not file_path:
+                return False, "No file path"
+            else:
+                self.InFile= file_path
+                return True, "File path set"
+        except Exception as e:
+            result:str=f"Something went wrong, error {e}"
+            print(result)
+            return False, result
+    #set name of output file and path to ir
+    def set_output(self,file_path: str=None)-> tuple[bool,str]:
+        try:
+            if not file_path:
+                return False, "No file path"
+            else:
+                self.OutFile:str= file_path
+                return True, "File path set"
+        except Exception as e:
+            result:str=f"Something went wrong, error {e}"
+            print(result)
+            return False, result
+    #Set Data and get header, check for validity of header and 0 length
+    #input csv.DictEeader out bool and result message
+    def set_data(self, reader:csv.DictReader=None)->tuple[bool, str]:
+        try:
+            if not reader:
+                return False, "Pass a valid file"
+            #process file
+            self.Data: list[dict]=list(reader)
+            self.Headers:list=reader.fieldnames
+            if not self.Headers:
+                return False, "No headers in file"
+            if len(self.Data)==1:
+                return False, "File contains headers only"
+            if any(header is None for header in self.Headers):
+                return False, "Bad Header format, recreate CSV"
+            return True, "Data and Header set successfully"
+        except Exception as e:    
+            result=f"Something went wrong, {e}"
+            return False, result
 
 # required columns in our file
 REQUIRED_COLUMNS = {'First Name', 'Last Name', 'Email Address', 'Status'}
@@ -213,7 +232,6 @@ def open_file() -> None:
 
         file_path: str = filedialog.askopenfilename(
             filetypes=[("CSV files", "*.csv")])
-        print(file_path)    
         if file_path:
             ldif_file: str = filedialog.asksaveasfilename(
                 defaultextension=".ldif", filetypes=[("LDIF files", "*.ldif")])
@@ -221,77 +239,12 @@ def open_file() -> None:
                 csv_to_ldif(file_path, ldif_file, ou_value, o_value, dc_value)
 
     except Exception as e:
-        result_label.config(
-            text=f"Something went wrong while opening files, error: {e}!")
+        result_label.config(text=f"Something went wrong while opening files, error: {e}!")
+
+
+
+
 
 
 if __name__ == "__main__":
-
-    app = tk.Tk()
-    app.title("CSV to LDIF Converter")
-    app.geometry("500x400")
-    # Create a menu bar
-    menu_bar = tk.Menu(app)
-
-    # Create a File menu
-    file_menu = tk.Menu(menu_bar, tearoff=0)
-    file_menu.add_command(label="Open", command=open_file)
-    file_menu.add_separator()
-    file_menu.add_command(label="Exit", command=app.quit)
-
-    menu_bar.add_cascade(label="File", menu=file_menu)
-
-    # Add the menu bar to the window
-    app.config(menu=menu_bar)
-
-    open_button = tk.Button(app, text="Open CSV File", command=open_file)
-    # open_button.pack(pady=10)
-
-    progress_bar = Progressbar(
-        app, orient="horizontal", length=300, mode="determinate")
-    # progress_bar.pack(pady=10)
-
-    progress_label = tk.Label(app, text="Waiting for Input!")
-    # progress_label.pack(pady=10)
-
-    result_label = tk.Label(app, text="O and OU required, DC is optional!")
-    # result_label.pack(pady=10)
-
-    # Fields for o, ou and dc
-
-    o_label = tk.Label(app, text="Organization (o):")
-    # o_label.pack(pady=5)
-    o_entry = tk.Entry(app)
-    # o_entry.pack(pady=5)
-
-    ou_label = tk.Label(app, text="Organizational Unit (ou):")
-    # ou_label.pack(pady=5)
-    ou_entry = tk.Entry(app)
-    # ou_entry.pack(pady=5)
-
-    dc_label = tk.Label(app, text="Domain Component (dc) ea example.com:")
-    # dc_label.pack(pady=5)
-    dc_entry = tk.Entry(app)
-    # dc_entry.pack(pady=5)
-
-# Layout using grid
-    open_button.grid(row=0, column=0, columnspan=2, pady=10)
-    progress_bar.grid(row=1, column=0, columnspan=2, pady=5)
-    progress_label.grid(row=2, column=0, columnspan=2, pady=5)
-    result_label.grid(row=3, column=0, columnspan=2, pady=5)
-
-    o_label.grid(row=4, column=0, pady=5, sticky="e")
-    o_entry.grid(row=4, column=1, pady=5, sticky="w")
-
-    ou_label.grid(row=5, column=0, pady=5, sticky="e")
-    ou_entry.grid(row=5, column=1, pady=5, sticky="w")
-
-    dc_label.grid(row=6, column=0, pady=5, sticky="e")
-    dc_entry.grid(row=6, column=1, pady=5, sticky="w")
-
-
-# debuging stuff
-    # debug_label = tk.Label(app, text="debug")
-    # debug_label.grid(row=7, column=1)
-
-    app.mainloop()
+    print("You Should not start this file")
