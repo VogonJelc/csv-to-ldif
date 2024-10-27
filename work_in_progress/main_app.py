@@ -1,6 +1,5 @@
 #Import modules
 import csv
-from logging import raiseExceptions
 import tkinter as tk
 from tkinter import filedialog
 from tkinter.ttk import Progressbar, Treeview, Combobox, Checkbutton
