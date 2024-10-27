@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
 
  
-    ]
+  
 
     REQUIRED_COLUMNS = {'cn', 'sn', 'mail'}
     ldap_attributes = ["n/a", "cn", "sn", "givenName", "mail", "uid", "o", "ou", "dc", "password"]
