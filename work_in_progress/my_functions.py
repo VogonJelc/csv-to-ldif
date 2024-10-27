@@ -1,9 +1,6 @@
 #This is just a whole bunch of functions I have that I might use in new project. 
 
 import csv
-from email import message
-from email.header import Header
-from shutil import ExecError
 import tkinter as tk
 from tkinter import filedialog
 from tkinter.ttk import Progressbar, Treeview, Combobox, Checkbutton
