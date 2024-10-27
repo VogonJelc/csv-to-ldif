@@ -8,8 +8,15 @@ import chardet as crd
 
 #redo when rest of code done 
 comboboxes:dict=[]
-def validate_selection(comboboxes:dict)->None:
+def validate_selections(comboboxes:dict)->None:
     raise ValueError("To be implemented")
+
+def open_file_and_process()->None:
+    raise ValueError("To be implemented")
+
+def process_ldif()->None:
+    raise ValueError("To be implemented")
+
 
 #main body
 if __name__ == "__main__":
@@ -30,7 +37,7 @@ if __name__ == "__main__":
     validate_button = tk.Button(app, text="Validate Selections", command=lambda: validate_selections(comboboxes))
     validate_button.grid(row=2, column=0, columnspan=1, pady=10)
 
-    open_button = tk.Button(app, text="Open CSV File", command=open_file_and_populate)
+    open_button = tk.Button(app, text="Open CSV File", command=open_file_and_process)
     open_button.grid(row=3, column=0, columnspan=1, pady=10)
 
     save_ldif_button = tk.Button(app, text="Save LDIF", command=process_ldif)
