@@ -4,7 +4,6 @@ import csv
 import tkinter as tk
 from tkinter import filedialog
 from tkinter.ttk import Progressbar, Treeview, Combobox, Checkbutton
-
 import chardet as crd
 
 
