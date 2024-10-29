@@ -6,6 +6,7 @@
 deactivate
 envVars.txt
 requirements.txt
+*.pyc
 # Ignore the entire test directory
 /test/
 /old_files/
