@@ -13,7 +13,9 @@ comboboxes = {}
 
 
 def get_dropdown_values(comboboxes) -> dict:
-    return {combobox.get(): col for col, combobox in comboboxes.items()}
+    result = {combobox_value.get(): col_key for col_key, combobox_value in comboboxes.items()}
+    print(result) 
+    return result
 
 
 def validate_selections(comboboxes):
