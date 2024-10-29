@@ -23,13 +23,16 @@ class DataStorage:
         self.O:str=None
         #optional entry must be example.com and split into dc=example, dc=com
         self.DC:str=None
+        self.file_enc='utf-8'
     #set name of the input file and path to it     
     def set_input(self,file_path: str=None)-> tuple[bool,str]:
         try:
             if not file_path:
+                print("exited first if in set input")
                 return False, "No file path"
             else:
                 self.InFile= file_path
+                print("set file ok")
                 return True, "File path set"
         except Exception as e:
             result:str=f"Something went wrong, error {e}"
@@ -47,22 +50,58 @@ class DataStorage:
             result:str=f"Something went wrong, error {e}"
             print(result)
             return False, result
+    #get encoding of input file
+    def det_encoding(self, file: str=None) -> None:
+        """
+        Detects the encoding of file and returns it as str
+        Args:
+            file (str): File name of source *.csv file
+
+        Returns:
+            str: Returns the encoding of source csv file
+
+        """
+        with open(file, 'rb') as rawdata:
+            result = crd.detect(rawdata.read())
+            self.file_enc=result 
+            print(self.file_enc)  
     #Set Data and get header, check for validity of header and 0 length
-    #input csv.DictEeader out bool and result message
+    #input csv.DictReader out bool and result message
     def set_data(self, reader:csv.DictReader=None)->tuple[bool, str]:
         try:
-            if not reader:
-                return False, "Pass a valid file"
+            print("called set data")
+            if not reader and not self.InFile:
+                print("exited first if on set data")
+                #rework if no reader passed check if self.InFle !None and use it for to process
+                return False, "Pass a valid file or set set_input(file)"
             #process file
-            self.Data: list[dict]=list(reader)
-            self.Headers:list=reader.fieldnames
-            if not self.Headers:
-                return False, "No headers in file"
-            if len(self.Data)==1:
-                return False, "File contains headers only"
-            if any(header is None for header in self.Headers):
-                return False, "Bad Header format, recreate CSV"
-            return True, "Data and Header set successfully"
+            if reader:
+                print("Procesed for reader")
+                self.Data: list[dict]=list(reader)
+                self.Headers:list=reader.fieldnames
+                if not self.Headers:
+                    return False, "No headers in file"
+                if len(self.Data)==1:
+                    return False, "File contains headers only"
+                if any(header is None for header in self.Headers):
+                    return False, "Bad Header format, recreate CSV"
+                return True, "Data and Header set successfully"
+            if self.InFile and not reader:
+                print("procesed for self.InFile")
+                det_encoding(self.InFile)
+                with open(self.InFile, 'r', encoding=self.file_enc, errors='replace') as f:
+                    reader = csv.DictReader(f)
+                    self.Data: list[dict]=list(reader)
+                    self.Headers:list=reader.fieldnames
+                    print(self.Headers)
+                    if not self.Headers:
+                        return False, "No headers in file"
+                    if len(self.Data)==1:
+                        return False, "File contains headers only"
+                    if any(header is None for header in self.Headers):
+                        return False, "Bad Header format, recreate CSV"
+                    return True, "Data and Header set successfully"
+            print("Did nothing")
         except Exception as e:    
             result=f"Something went wrong, {e}"
             return False, result

@@ -6,7 +6,7 @@ from tkinter.ttk import Progressbar, Treeview, Combobox, Checkbutton
 import chardet as crd
 from my_functions import DataStorage as DS
 # redo when rest of code done
-csv_object: DS = DS
+csv_object: DS = DS()
 comboboxes: dict = []
 
 
@@ -31,6 +31,8 @@ def open_file_and_process() -> None:
             csv_object.set_input(file_path)
             print(file_path)
             # call function to populate treeview
+            suc, poruka = csv_object.set_data()
+            print(f"Uradio je {suc} sa porukom{poruka}")
     except Exception as e:
         result_label.config(
             text=f"Something went wrong while opening files, error: {e}!")
