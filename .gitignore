@@ -14,4 +14,4 @@ requirements.txt
 /build/
 /Obsolete/
 .DS_Store
-work_in_progress/__pycache__/
+/work_in_progress/__pycache__/
