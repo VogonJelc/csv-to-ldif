@@ -12,7 +12,6 @@ work_rows = []
 comboboxes = {}
 
 
-
 def get_dropdown_values(comboboxes) -> dict:
     return {combobox.get(): col for col, combobox in comboboxes.items()}
 
@@ -49,7 +48,7 @@ def process_csv(comboboxes: dict) -> list[dict]:
             "Mail": mail
         }
         if row['Status']:
-            row_data['Status']=row['Status']
+            row_data['Status'] = row['Status']
         for attr in left_columns:
             if attr == "n/a":
                 continue
@@ -136,11 +135,13 @@ def populate_table(rows: list[dict], ldap_attributes: list[str]):
 
         # Create a frame for comboboxes to ensure proper alignment
         combobox_frame = tk.Frame(app)
-        combobox_frame.grid(row=0, column=0, columnspan=len(columns), padx=5, pady=5, sticky='ew')
+        combobox_frame.grid(row=0, column=0, columnspan=len(
+            columns), padx=5, pady=5, sticky='ew')
 
         # Create the dropdowns for the first row (header)
         for col in columns:
-            combobox = Combobox(combobox_frame, values=ldap_attributes, width=15)
+            combobox = Combobox(
+                combobox_frame, values=ldap_attributes, width=15)
             combobox.grid(row=0, column=columns.index(col), padx=5, pady=5)
             combobox.set("n/a")
             comboboxes[col] = combobox
@@ -153,7 +154,8 @@ def process_and_save_ldif():
     processed_data = process_csv(comboboxes)
     print(comboboxes)
     if skip_suspended_var.get():
-        active_users = [row for row in processed_data if row['Status'].lower() == 'active']
+        active_users = [
+            row for row in processed_data if row['Status'].lower() == 'active']
         active_users_count = len(active_users)
         print(active_users)
     else:
@@ -165,7 +167,8 @@ def process_and_save_ldif():
 
     ldif_entries = create_ldif_entries(active_users)
 
-    ldif_file_path = filedialog.asksaveasfilename(defaultextension=".ldif", filetypes=[("LDIF files", "*.ldif")])
+    ldif_file_path = filedialog.asksaveasfilename(
+        defaultextension=".ldif", filetypes=[("LDIF files", "*.ldif")])
     if ldif_file_path:
         write_ldif(ldif_entries, ldif_file_path)
 
@@ -186,18 +189,16 @@ def process_ldif():
         print("No data to process.")
 
 
-
-
 def update_progress(index: int, total_users: int) -> None:
     progress_label.config(text=f"Creating user {index} of {total_users}")
     progress_bar["value"] = index
     app.update_idletasks()
 
+
 if __name__ == "__main__":
     app = tk.Tk()
     app.title("CSV to LDIF Converter")
     app.geometry("700x500")
-
 
     data = [
         ['Name', 'Last Name', 'Email', 'Password', 'Status'],
@@ -206,25 +207,31 @@ if __name__ == "__main__":
     ]
 
     REQUIRED_COLUMNS = {'cn', 'sn', 'mail'}
-    ldap_attributes = ["n/a", "cn", "sn", "givenName", "mail", "uid", "o", "ou", "dc", "password"]
+    ldap_attributes = ["n/a", "cn", "sn", "givenName",
+                       "mail", "uid", "o", "ou", "dc", "password"]
 
     tree = Treeview(app)
     tree.grid(row=1, column=0, columnspan=len(data[0]), sticky='nsew')
 
-    validate_button = tk.Button(app, text="Validate Selections", command=lambda: validate_selections(comboboxes))
+    validate_button = tk.Button(
+        app, text="Validate Selections", command=lambda: validate_selections(comboboxes))
     validate_button.grid(row=2, column=0, columnspan=len(data[0]), pady=10)
 
-    open_button = tk.Button(app, text="Open CSV File", command=open_file_and_populate)
+    open_button = tk.Button(app, text="Open CSV File",
+                            command=open_file_and_populate)
     open_button.grid(row=3, column=0, columnspan=len(data[0]), pady=10)
 
     save_ldif_button = tk.Button(app, text="Save LDIF", command=process_ldif)
     save_ldif_button.grid(row=4, column=0, columnspan=len(data[0]), pady=10)
 
     skip_suspended_var = tk.BooleanVar()
-    skip_suspended_check = tk.Checkbutton(app, text="Skip Suspended", variable=skip_suspended_var)
-    skip_suspended_check.grid(row=5, column=0, columnspan=len(data[0]), pady=10)
+    skip_suspended_check = tk.Checkbutton(
+        app, text="Skip Suspended", variable=skip_suspended_var)
+    skip_suspended_check.grid(
+        row=5, column=0, columnspan=len(data[0]), pady=10)
 
-    progress_bar = Progressbar(app, orient="horizontal", length=300, mode="determinate")
+    progress_bar = Progressbar(
+        app, orient="horizontal", length=300, mode="determinate")
     progress_bar.grid(row=6, column=0, columnspan=len(data[0]), pady=10)
 
     progress_label = tk.Label(app, text="Waiting for Input!")
