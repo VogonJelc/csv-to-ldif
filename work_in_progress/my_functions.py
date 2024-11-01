@@ -1,4 +1,4 @@
-#This is just a whole bunch of functions I have that I might use in new project. 
+# This is just a whole bunch of functions I have that I might use in new project.
 
 import csv
 import tkinter as tk
@@ -6,52 +6,64 @@ from tkinter import filedialog
 from tkinter.ttk import Progressbar, Treeview, Combobox, Checkbutton
 import chardet as crd
 
+# Check if elements are unique
 
-#data type to keep our stuff arround
+
+def isUnique(comboboxes: dict) -> bool:
+    Combo_Keys: list = comboboxes.keys()
+    seen = set()
+    return not any(i in seen or seen.add(i) for i in Combo_Keys)
+
+# data type to keep our stuff arround
+
+
 class DataStorage:
-    def __init__(self, csv_file:str=None,ldif_file:str=None):
-        #Names of the files in use
-        self.InFile:str=csv_file
-        self.OutFile:str=ldif_file
-        #Extracted list of dictionaries
-        self.Data: list[dict]=None
-        #Headers from data
-        self.Headers:list=None
-        #ldap entries
-        #required to get
-        self.OU:str=None
-        self.O:str=None
-        #optional entry must be example.com and split into dc=example, dc=com
-        self.DC:str=None
-        self.file_enc='utf-8'
-    #set name of the input file and path to it     
-    def set_input(self,file_path: str=None)-> tuple[bool,str]:
+    def __init__(self, csv_file: str = None, ldif_file: str = None):
+        # Names of the files in use
+        self.InFile: str = csv_file
+        self.OutFile: str = ldif_file
+        # Extracted list of dictionaries
+        self.Data: list[dict] = None
+        # Headers from data
+        self.Headers: list = None
+        # ldap entries
+        # required to get
+        self.OU: str = None
+        self.O: str = None
+        # optional entry must be example.com and split into dc=example, dc=com
+        self.DC: str = None
+        self.file_enc = 'utf-8'
+    # set name of the input file and path to it
+
+    def set_input(self, file_path: str = None) -> tuple[bool, str]:
         try:
             if not file_path:
                 print("exited first if in set input")
                 return False, "No file path"
             else:
-                self.InFile= file_path
+                self.InFile = file_path
                 print("set file ok")
                 return True, "File path set"
         except Exception as e:
-            result:str=f"Something went wrong, error {e}"
+            result: str = f"Something went wrong, error {e}"
             print(result)
             return False, result
-    #set name of output file and path to ir
-    def set_output(self,file_path: str=None)-> tuple[bool,str]:
+    # set name of output file and path to ir
+
+    def set_output(self, file_path: str = None) -> tuple[bool, str]:
         try:
             if not file_path:
                 return False, "No file path"
             else:
-                self.OutFile:str= file_path
+                self.OutFile: str = file_path
                 return True, "File path set"
         except Exception as e:
-            result:str=f"Something went wrong, error {e}"
+            result: str = f"Something went wrong, error {e}"
             print(result)
             return False, result
-    #get encoding of input file
-    def det_encoding(self, file: str=None) -> None:
+    # get encoding of input file
+
+    def det_encoding(self, file: str = None) -> None:
         """
         Detects the encoding of file and returns it as str
         Args:
@@ -63,25 +75,26 @@ class DataStorage:
         """
         with open(file, 'rb') as rawdata:
             result = crd.detect(rawdata.read())
-            self.file_enc=result 
-            print(self.file_enc)  
-    #Set Data and get header, check for validity of header and 0 length
-    #input csv.DictReader out bool and result message
-    def set_data(self, reader:csv.DictReader=None)->tuple[bool, str]:
+            self.file_enc = result
+            print(self.file_enc)
+    # Set Data and get header, check for validity of header and 0 length
+    # input csv.DictReader out bool and result message
+
+    def set_data(self, reader: csv.DictReader = None) -> tuple[bool, str]:
         try:
             print("called set data")
             if not reader and not self.InFile:
                 print("exited first if on set data")
-                #rework if no reader passed check if self.InFle !None and use it for to process
+                # rework if no reader passed check if self.InFle !None and use it for to process
                 return False, "Pass a valid file or set set_input(file)"
-            #process file
+            # process file
             if reader:
                 print("Procesed for reader")
-                self.Data: list[dict]=list(reader)
-                self.Headers:list=reader.fieldnames
+                self.Data: list[dict] = list(reader)
+                self.Headers: list = reader.fieldnames
                 if not self.Headers:
                     return False, "No headers in file"
-                if len(self.Data)==1:
+                if len(self.Data) == 1:
                     return False, "File contains headers only"
                 if any(header is None for header in self.Headers):
                     return False, "Bad Header format, recreate CSV"
@@ -91,20 +104,21 @@ class DataStorage:
                 det_encoding(self.InFile)
                 with open(self.InFile, 'r', encoding=self.file_enc, errors='replace') as f:
                     reader = csv.DictReader(f)
-                    self.Data: list[dict]=list(reader)
-                    self.Headers:list=reader.fieldnames
+                    self.Data: list[dict] = list(reader)
+                    self.Headers: list = reader.fieldnames
                     print(self.Headers)
                     if not self.Headers:
                         return False, "No headers in file"
-                    if len(self.Data)==1:
+                    if len(self.Data) == 1:
                         return False, "File contains headers only"
                     if any(header is None for header in self.Headers):
                         return False, "Bad Header format, recreate CSV"
                     return True, "Data and Header set successfully"
             print("Did nothing")
-        except Exception as e:    
-            result=f"Something went wrong, {e}"
+        except Exception as e:
+            result = f"Something went wrong, {e}"
             return False, result
+
 
 # required columns in our file
 REQUIRED_COLUMNS = {'First Name', 'Last Name', 'Email Address', 'Status'}
@@ -151,7 +165,8 @@ def create_dn_entry(row: dict, ou_value: str, o_value: str, dc_value: str | None
     if dc_value:
         dc_parts: list = dc_value.split('.')
         if len(dc_parts) == 2:
-            dn = f"dn: cn={cn},ou={ou_value},o={o_value},dc={dc_value.split('.')[0]},dc={dc_value.split('.')[1]}\n"
+            dn = f"dn: cn={cn},ou={ou_value},o={o_value},dc={
+                dc_value.split('.')[0]},dc={dc_value.split('.')[1]}\n"
         else:
             raise ValueError("dc_value must be in 'domain.component' format")
     else:
@@ -184,7 +199,7 @@ def validate_csv(reader: csv.DictReader) -> tuple[bool, list[dict], int]:
     active_rows: list[dict] = [
         row for row in all_rows if row['Status'].lower() == 'active']
     active_users: int = len(active_rows)
-    #print(active_rows)
+    # print(active_rows)
     # debug_label.configure(text=f"Active user count {active_users}")
     # number of user is equal to number of dictionaries
     total_users: int = len(all_rows)
@@ -274,11 +289,8 @@ def open_file() -> None:
                 csv_to_ldif(file_path, ldif_file, ou_value, o_value, dc_value)
 
     except Exception as e:
-        result_label.config(text=f"Something went wrong while opening files, error: {e}!")
-
-
-
-
+        result_label.config(
+            text=f"Something went wrong while opening files, error: {e}!")
 
 
 if __name__ == "__main__":
