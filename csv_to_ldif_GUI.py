@@ -93,11 +93,12 @@ def det_encoding(file: str) -> str:
 def create_dn_entry(row: dict, ou_value: str, o_value: str, dc_value: str | None = None) -> tuple[str, str, str, str, str]:
     first_name = row['First Name']
     last_name = row['Last Name']
-    cn = first_name
+    cn = f"{first_name} {last_name}"
     if dc_value:
         dc_parts: list = dc_value.split('.')
         if len(dc_parts) == 2:
-            dn = f"dn: cn={cn},ou={ou_value},o={o_value},dc={dc_value.split('.')[0]},dc={dc_value.split('.')[1]}\n"
+            dn = f"dn: cn={cn},ou={ou_value},o={o_value},dc={
+                dc_value.split('.')[0]},dc={dc_value.split('.')[1]}\n"
         else:
             raise ValueError("dc_value must be in 'domain.component' format")
     else:
@@ -130,7 +131,7 @@ def validate_csv(reader: csv.DictReader) -> tuple[bool, list[dict], int]:
     active_rows: list[dict] = [
         row for row in all_rows if row['Status'].lower() == 'active']
     active_users: int = len(active_rows)
-    #print(active_rows)
+    # print(active_rows)
     # debug_label.configure(text=f"Active user count {active_users}")
     # number of user is equal to number of dictionaries
     total_users: int = len(all_rows)
@@ -213,7 +214,7 @@ def open_file() -> None:
 
         file_path: str = filedialog.askopenfilename(
             filetypes=[("CSV files", "*.csv")])
-        #print(file_path)    
+        # print(file_path)
         if file_path:
             ldif_file: str = filedialog.asksaveasfilename(
                 defaultextension=".ldif", filetypes=[("LDIF files", "*.ldif")])
