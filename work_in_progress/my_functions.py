@@ -33,6 +33,7 @@ class DataStorage:
         # optional entry must be example.com and split into dc=example, dc=com
         self.DC: str = None
         self.file_enc = 'utf-8'
+        self.REQUIRED_COLUMNS: set = {'First Name', 'Last Name', 'Email Address', 'Status'}
     # set name of the input file and path to it
 
     def set_input(self, file_path: str = None) -> tuple[bool, str]:
@@ -75,7 +76,7 @@ class DataStorage:
         """
         with open(file, 'rb') as rawdata:
             result = crd.detect(rawdata.read())
-            self.file_enc = result
+            self.file_enc = result['encoding']
             print(self.file_enc)
     # Set Data and get header, check for validity of header and 0 length
     # input csv.DictReader out bool and result message
@@ -89,7 +90,7 @@ class DataStorage:
                 return False, "Pass a valid file or set set_input(file)"
             # process file
             if reader:
-                print("Procesed for reader")
+                print("Processed for reader")
                 self.Data: list[dict] = list(reader)
                 self.Headers: list = reader.fieldnames
                 if not self.Headers:
@@ -100,7 +101,7 @@ class DataStorage:
                     return False, "Bad Header format, recreate CSV"
                 return True, "Data and Header set successfully"
             if self.InFile and not reader:
-                print("procesed for self.InFile")
+                print("processed for self.InFile")
                 det_encoding(self.InFile)
                 with open(self.InFile, 'r', encoding=self.file_enc, errors='replace') as f:
                     reader = csv.DictReader(f)
@@ -113,11 +114,17 @@ class DataStorage:
                         return False, "File contains headers only"
                     if any(header is None for header in self.Headers):
                         return False, "Bad Header format, recreate CSV"
+                    if not self.REQUIRED_COLUMNS.issubset(self.Headers):
+                        return False, "CSV file does not have the required columns."
                     return True, "Data and Header set successfully"
             print("Did nothing")
         except Exception as e:
             result = f"Something went wrong, {e}"
             return False, result
+    def set_required_columns(self, INPUT_REQUIRED_COLUMNS:set)-> tuple[bool, str]:
+        self.REQUIRED_COLUMNS.clear()
+        self.REQUIRED_COLUMNS.update(INPUT_REQUIRED_COLUMNS)
+        return True, f"Required columns set to {self.REQUIRED_COLUMNS}"
 
 
 # required columns in our file
