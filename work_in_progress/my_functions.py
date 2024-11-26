@@ -133,36 +133,8 @@ REQUIRED_COLUMNS = {'First Name', 'Last Name', 'Email Address', 'Status'}
 # progress bar update function
 
 
-def update_progress(index: int, total_users: int) -> None:
-    """
-    Updates the progress bar and label with the current progress.
-
-    Args:
-        index (int): The current user number being processed.
-        total_users (int): The total number of users in the file.
-    """
-    progress_label.config(text=f"Creating user {index} of {total_users}")
-    progress_bar["value"] = index
-    app.update_idletasks()
-
-# detect encoding
 
 
-def det_encoding(file: str) -> str:
-    """
-    Detects the encoding of file and returns it as str
-    Args:
-        file (str): File name of source *.csv file
-
-    Returns:
-        str: Returns the encoding of source csv file
-
-    """
-    with open(file, 'rb') as rawdata:
-        result = crd.detect(rawdata.read())
-        return result['encoding']
-
-# return dn
 
 
 def create_dn_entry(row: dict, ou_value: str, o_value: str, dc_value: str | None = None) -> tuple[str, str, str, str, str]:
@@ -172,8 +144,8 @@ def create_dn_entry(row: dict, ou_value: str, o_value: str, dc_value: str | None
     if dc_value:
         dc_parts: list = dc_value.split('.')
         if len(dc_parts) == 2:
-            dn = f"dn: cn={cn},ou={ou_value},o={o_value},dc={
-                dc_value.split('.')[0]},dc={dc_value.split('.')[1]}\n"
+            #dn = f"dn: cn={cn},ou={ou_value},o={o_value},dc={dc_value.split('.')[0]},dc={dc_value.split('.')[1]}\n"
+            dn = f"dn: cn={cn},ou={ou_value},o={o_value},dc={dc_parts[0]},dc={dc_parts[1]}\n"
         else:
             raise ValueError("dc_value must be in 'domain.component' format")
     else:
