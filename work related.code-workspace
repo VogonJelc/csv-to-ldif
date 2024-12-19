@@ -5,6 +5,10 @@
         },
         {
             "path": "../../Komunalno"
+        },
+        {
+            "name": "Ucenje",
+            "path": "../../Ucenje"
         }
     ]
 }
