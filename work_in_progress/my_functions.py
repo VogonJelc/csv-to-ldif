@@ -102,7 +102,7 @@ class DataStorage:
                 return True, "Data and Header set successfully"
             if self.InFile and not reader:
                 print("processed for self.InFile")
-                det_encoding(self.InFile)
+                self.det_encoding(self.InFile)
                 with open(self.InFile, 'r', encoding=self.file_enc, errors='replace') as f:
                     reader = csv.DictReader(f)
                     self.Data: list[dict] = list(reader)
