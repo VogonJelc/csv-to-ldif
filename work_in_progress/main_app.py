@@ -48,7 +48,7 @@ if __name__ == "__main__":
     app.title("CSV to LDIF Converter")
     app.geometry("700x700")
 
-    REQUIRED_COLUMNS = {'cn', 'sn', 'mail'}
+    REQUIRED_COLUMNS = {'First Name', 'Last Name', 'Email Address', 'Status'}
     ldap_attributes = ["n/a", "cn", "sn", "givenName",
                        "mail", "uid", "o", "ou", "dc", "password"]
 
