@@ -33,7 +33,8 @@ class DataStorage:
         # optional entry must be example.com and split into dc=example, dc=com
         self.DC: str = None
         self.file_enc = 'utf-8'
-        self.REQUIRED_COLUMNS: set = {'First Name', 'Last Name', 'Email Address', 'Status'}
+        self.REQUIRED_COLUMNS: set = {
+            'First Name', 'Last Name', 'Email Address', 'Status'}
     # set name of the input file and path to it
 
     def set_input(self, file_path: str = None) -> tuple[bool, str]:
@@ -121,7 +122,8 @@ class DataStorage:
         except Exception as e:
             result = f"Something went wrong, {e}"
             return False, result
-    def set_required_columns(self, INPUT_REQUIRED_COLUMNS:set)-> tuple[bool, str]:
+
+    def set_required_columns(self, INPUT_REQUIRED_COLUMNS: set) -> tuple[bool, str]:
         self.REQUIRED_COLUMNS.clear()
         self.REQUIRED_COLUMNS.update(INPUT_REQUIRED_COLUMNS)
         return True, f"Required columns set to {self.REQUIRED_COLUMNS}"
@@ -133,10 +135,6 @@ REQUIRED_COLUMNS = {'First Name', 'Last Name', 'Email Address', 'Status'}
 # progress bar update function
 
 
-
-
-
-
 def create_dn_entry(row: dict, ou_value: str, o_value: str, dc_value: str | None = None) -> tuple[str, str, str, str, str]:
     first_name = row['First Name']
     last_name = row['Last Name']
@@ -144,8 +142,9 @@ def create_dn_entry(row: dict, ou_value: str, o_value: str, dc_value: str | None
     if dc_value:
         dc_parts: list = dc_value.split('.')
         if len(dc_parts) == 2:
-            #dn = f"dn: cn={cn},ou={ou_value},o={o_value},dc={dc_value.split('.')[0]},dc={dc_value.split('.')[1]}\n"
-            dn = f"dn: cn={cn},ou={ou_value},o={o_value},dc={dc_parts[0]},dc={dc_parts[1]}\n"
+            # dn = f"dn: cn={cn},ou={ou_value},o={o_value},dc={dc_value.split('.')[0]},dc={dc_value.split('.')[1]}\n"
+            dn = f"dn: cn={cn},ou={ou_value},o={
+                o_value},dc={dc_parts[0]},dc={dc_parts[1]}\n"
         else:
             raise ValueError("dc_value must be in 'domain.component' format")
     else:
